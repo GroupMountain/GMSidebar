@@ -1,0 +1,13 @@
+{
+    "name": "${pluginName}",
+    "entry": "${pluginFile}",
+    "type": "native",
+    "author": "author",
+    "description": "description",
+    "version": "0.0.0",
+    "dependencies": [
+        {
+            "name": "GMLIB"
+        }
+    ]
+}
