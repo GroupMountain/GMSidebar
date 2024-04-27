@@ -4,11 +4,13 @@
 struct Config {
     int version = 1;
 
+    std::string language = "zh_CN";
+
     ObjectiveSortOrder sortType = ObjectiveSortOrder::Ascending;
 
     struct TitleInfo {
-        std::vector<std::string> data = {"§aGMSidebar", "§bGMSidebar", "§cGMSidebar"};
-        int                      updateInverval =2;
+        std::vector<std::string> data           = {"§aGMSidebar", "§bGMSidebar", "§cGMSidebar"};
+        int                      updateInverval = 2;
     } title;
 
     struct DataInfo {

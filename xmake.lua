@@ -40,7 +40,7 @@ add_requires("levilamina")
 --         import("package.tools.xmake").install(package)
 --     end)
 
-target("GMLIB-Plugin-Template") -- Change this to your plugin name.
+target("GMSidebar") -- Change this to your plugin name.
     add_cxflags(
         "/EHa",
         "/utf-8"
