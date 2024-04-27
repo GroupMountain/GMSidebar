@@ -21,8 +21,8 @@ void sendSidebar(GMLIB_Player* pl) {
         GMLIB::Server::PlaceholderAPI::translate(data, pl);
     }
     auto title = GMLIB::Server::PlaceholderAPI::translateString(mTitle, pl);
-    logger.warn("{}", title);
     pl->removeClientSidebar();
+    // pl->setClientSidebar(title, dataList, mOrder);
     SetDisplayObjectivePacket("sidebar", "GMLIB_SIDEBAR_API", title, "dummy", mOrder).sendTo(*pl);
 
     std::vector<ScorePacketInfo> info;
