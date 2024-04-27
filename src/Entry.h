@@ -1,4 +1,5 @@
 #pragma once
+#include "Config.h"
 #include <ll/api/plugin/NativePlugin.h>
 #include <ll/api/plugin/RegisterHelper.h>
 
@@ -26,8 +27,11 @@ public:
     // /// @return True if the plugin is unloaded successfully.
     // bool unload();
 
+    Config& getConfig() { return mConfig.value(); }
+
 private:
     ll::plugin::NativePlugin& mSelf;
+    std::optional<Config>     mConfig;
 };
 
 } // namespace my_plugin
