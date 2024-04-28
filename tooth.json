@@ -1,0 +1,28 @@
+{
+    "format_version": 2,
+    "tooth": "github.com/GroupMountain/GMSidebar",
+    "version": "0.12.0",
+    "info": {
+        "name": "GMSidebar",
+        "description": "High Performance Sidebar Plugin",
+        "author": "GroupMountain",
+        "source": "github.com/GroupMountain/GMSidebar",
+        "tags": [
+            "levilamina",
+            "whitelist",
+            "gmlib"
+        ]
+    },
+    "asset_url": "https://github.com/GroupMountain/GMSidebar/releases/download/v0.12.0/GMSidebar-windows-x64.zip",
+    "dependencies": {
+        "github.com/GroupMountain/GMLIB": ">=0.12.0"
+    },
+    "files": {
+        "place": [
+            {
+                "src": "GMSidebar/*",
+                "dest": "plugins/GMSidebar"
+            }
+        ]
+    }
+}
