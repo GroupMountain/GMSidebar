@@ -15,7 +15,7 @@ std::optional<ll::schedule::SystemTimeScheduler> mAsyncScheduler;
 std::optional<ll::schedule::ServerTimeScheduler> mScheduler;
 
 std::string tr(std::string key, std::vector<std::string> data, std::string translateKey) {
-    return my_plugin::MyPlugin::getInstance()->translate(key, data, translateKey);
+    return gmsidebar::Entry::getInstance()->translate(key, data, translateKey);
 }
 
 void saveSidebarStatus() {
@@ -37,23 +37,7 @@ void sendSidebar(GMLIB_Player* pl) {
         GMLIB::Server::PlaceholderAPI::translate(data, pl);
     }
     auto title = GMLIB::Server::PlaceholderAPI::translateString(mTitle, pl);
-    // pl->setClientSidebar(title, dataList, mOrder);
-    SetDisplayObjectivePacket("sidebar", "GMLIB_SIDEBAR_API", title, "dummy", mOrder).sendTo(*pl);
-
-    std::vector<ScorePacketInfo> info;
-    for (auto& key : dataList) {
-        const ScoreboardId& id        = ScoreboardId(key.second);
-        auto                text      = key.first;
-        auto                scoreInfo = ScorePacketInfo();
-        scoreInfo.mScoreboardId       = id;
-        scoreInfo.mObjectiveName      = "GMLIB_SIDEBAR_API";
-        scoreInfo.mIdentityType       = IdentityDefinition::Type::FakePlayer;
-        scoreInfo.mScoreValue         = key.second;
-        scoreInfo.mFakePlayerName     = text;
-        info.emplace_back(scoreInfo);
-    }
-    auto pkt = SetScorePacket::change(info);
-    pkt.sendTo(*pl);
+    pl->setClientSidebar(title, dataList, mOrder);
 }
 
 void sendSidebarToClients() {
@@ -74,7 +58,7 @@ void sendSidebarToClients() {
 void init() {
     mAsyncScheduler.emplace();
     mScheduler.emplace();
-    auto& config = my_plugin::MyPlugin::getInstance()->getConfig();
+    auto& config = gmsidebar::Entry::getInstance()->getConfig();
     mOrder       = config.sortType;
     for (auto& [index, info] : config.sidebarInfo) {
         try {

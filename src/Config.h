@@ -19,8 +19,9 @@ struct Config {
     };
 
     std::unordered_map<std::string, DataInfo> sidebarInfo = {
-        {"1", DataInfo{{"§aConfig Example", "§bConfig Example", "§cConfig Example"}, 1}},
-        {"2", DataInfo{{"Player Name: %player_name%", "Player Ping: %player_ping%ms"}, 2} },
-        {"3", DataInfo{{"Server Mspt: %server_mspt%", "Server Tps: %server_tps%"}, 3}     }
+        {"1", DataInfo{{"§aConfig Example", "§bConfig Example", "§cConfig Example"}, 1} },
+        {"2", DataInfo{{"Name: %player_name%", "Ping: %player_ping%ms"}, 2}                },
+        {"3", DataInfo{{"Mspt: %server_mspt_colored_2%", "Tps: %server_tps_colored_2%"}, 3}},
+        {"4", DataInfo{{"Score1: %player_score_test1%", "Score2: %player_score_test2%"}, 3}}
     };
 };

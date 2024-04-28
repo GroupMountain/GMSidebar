@@ -5,19 +5,19 @@
 
 ll::Logger logger(PLUGIN_NAME);
 
-namespace my_plugin {
+namespace gmsidebar {
 
-std::unique_ptr<MyPlugin>& MyPlugin::getInstance() {
-    static std::unique_ptr<MyPlugin> instance;
+std::unique_ptr<Entry>& Entry::getInstance() {
+    static std::unique_ptr<Entry> instance;
     return instance;
 }
 
-bool MyPlugin::load() {
+bool Entry::load() {
     // Code for loading the plugin goes here.
     return true;
 }
 
-bool MyPlugin::enable() {
+bool Entry::enable() {
     // Code for enabling the plugin goes here.
     mConfig.emplace();
     ll::config::loadConfig(*mConfig, getSelf().getConfigDir() / u8"config.json");
@@ -30,10 +30,13 @@ bool MyPlugin::enable() {
     loadSidebarStatus();
     init();
     registerCommand();
+    logger.info("GMSidebar Loaded!");
+    logger.info("Author: GroupMountain");
+    logger.info("Repository: https://github.com/GroupMountain/GMSidebar");
     return true;
 }
 
-bool MyPlugin::disable() {
+bool Entry::disable() {
     // Code for disabling the plugin goes here.
     saveSidebarStatus();
     mConfig.reset();
@@ -42,11 +45,11 @@ bool MyPlugin::disable() {
     return true;
 }
 
-bool MyPlugin::unload() {
+bool Entry::unload() {
     // Code for disabling the plugin goes here.
     return true;
 }
 
-} // namespace my_plugin
+} // namespace gmsidebar
 
-LL_REGISTER_PLUGIN(my_plugin::MyPlugin, my_plugin::MyPlugin::getInstance());
+LL_REGISTER_PLUGIN(gmsidebar::Entry, gmsidebar::Entry::getInstance());

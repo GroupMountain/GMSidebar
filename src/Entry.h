@@ -4,14 +4,14 @@
 #include <ll/api/plugin/NativePlugin.h>
 #include <ll/api/plugin/RegisterHelper.h>
 
-namespace my_plugin {
+namespace gmsidebar {
 
-class MyPlugin {
+class Entry {
 
 public:
-    static std::unique_ptr<MyPlugin>& getInstance();
+    static std::unique_ptr<Entry>& getInstance();
 
-    MyPlugin(ll::plugin::NativePlugin& self) : mSelf(self) {}
+    Entry(ll::plugin::NativePlugin& self) : mSelf(self) {}
 
     [[nodiscard]] ll::plugin::NativePlugin& getSelf() const { return mSelf; }
 
@@ -41,4 +41,4 @@ private:
     std::unique_ptr<GMLIB::Files::I18n::LangI18n> mI18n;
 };
 
-} // namespace my_plugin
+} // namespace gmsidebar
