@@ -1,4 +1,4 @@
-# GMWhitelist
+# GMSidebar
 
 高性能、多线程的 BDS 侧边栏插件。
 
