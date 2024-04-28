@@ -19,13 +19,12 @@ std::string tr(std::string key, std::vector<std::string> data, std::string trans
 }
 
 void saveSidebarStatus() {
-    std::string path = "./plugins/GMSidebar/data/PlayerStatus.json";
-    GMLIB::Files::JsonFile::writeFile(path, mPlayerSidebarStatus);
+    GMLIB::Files::JsonFile::writeFile("./plugins/GMSidebar/data/PlayerStatus.json", mPlayerSidebarStatus);
 }
 
 void loadSidebarStatus() {
-    auto emptyFile       = nlohmann::json::object();
-    mPlayerSidebarStatus = GMLIB::Files::JsonFile::initJson("./plugins/GMSidebar/data/PlayerStatus.json", emptyFile);
+    mPlayerSidebarStatus =
+        GMLIB::Files::JsonFile::initJson("./plugins/GMSidebar/data/PlayerStatus.json", nlohmann::json::object());
 }
 
 void sendSidebar(GMLIB_Player* pl) {
