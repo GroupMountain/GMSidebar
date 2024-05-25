@@ -22,7 +22,7 @@ bool Entry::enable() {
     mConfig.emplace();
     ll::config::loadConfig(*mConfig, getSelf().getConfigDir() / u8"config.json");
     ll::config::saveConfig(*mConfig, getSelf().getConfigDir() / u8"config.json");
-    mI18n = std::make_unique<GMLIB::Files::I18n::LangI18n>(getSelf().getLangDir().string());
+    mI18n = std::make_unique<GMLIB::Files::I18n::LangI18n>(getSelf().getLangDir());
     mI18n->updateOrCreateLanguage("zh_CN", zh_CN);
     mI18n->loadAllLanguages();
     mI18n->chooseLanguage(mConfig->language);

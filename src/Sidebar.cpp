@@ -101,6 +101,14 @@ void disablePlugin() {
     mScheduler.reset();
 }
 
+bool getPlayerSidebarSetting(mce::UUID mUUID) { return mPlayerSidebarStatus[mUUID.asString()]; }
+
+void dealPlayerSidebarSetting(mce::UUID mUUID, bool setting) {
+    mPlayerSidebarStatus[mUUID.asString()] = setting;
+    saveSidebarStatus();
+}
+
+
 void registerCommand() {
     auto& cmd = ll::command::CommandRegistrar::getInstance()
                     .getOrCreateCommand("sidebar", tr("sidebar.command.desc"), CommandPermissionLevel::Any);
