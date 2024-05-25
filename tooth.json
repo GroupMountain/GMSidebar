@@ -1,7 +1,7 @@
 {
     "format_version": 2,
     "tooth": "github.com/GroupMountain/GMSidebar",
-    "version": "0.12.1",
+    "version": "0.12.3",
     "info": {
         "name": "GMSidebar",
         "description": "High Performance Sidebar Plugin",
@@ -13,7 +13,7 @@
             "gmlib"
         ]
     },
-    "asset_url": "https://github.com/GroupMountain/GMSidebar/releases/download/v0.12.1/GMSidebar-windows-x64.zip",
+    "asset_url": "https://github.com/GroupMountain/GMSidebar/releases/download/v0.12.3/GMSidebar-windows-x64.zip",
     "dependencies": {
         "github.com/GroupMountain/GMLIB": ">=0.12.1"
     },
