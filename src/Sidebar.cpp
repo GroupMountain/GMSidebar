@@ -1,4 +1,5 @@
 #include "Entry.h"
+#include "GMSidebarAPI.h"
 #include "Global.h"
 
 std::string                          mTitle;
@@ -7,7 +8,7 @@ std::unordered_map<int, int>         mDataIndex;
 ObjectiveSortOrder                   mOrder;
 int                                  mTitleIndex = 0;
 
-nlohmann::json mPlayerSidebarStatus;
+std::unordered_map<mce::UUID, bool> mPlayerSidebarStatus;
 
 using namespace ll::chrono_literals;
 
@@ -19,12 +20,22 @@ std::string tr(std::string key, std::vector<std::string> data, std::string trans
 }
 
 void saveSidebarStatus() {
-    GMLIB::Files::JsonFile::writeFile("./plugins/GMSidebar/data/PlayerStatus.json", mPlayerSidebarStatus);
+    nlohmann::json json;
+    for (auto& [key, val] : mPlayerSidebarStatus) {
+        json[key.asString()] = val;
+    }
+    GMLIB::Files::JsonFile::writeFile("./plugins/GMSidebar/data/PlayerStatus.json", json);
 }
 
 void loadSidebarStatus() {
-    mPlayerSidebarStatus =
+    auto json =
         GMLIB::Files::JsonFile::initJson("./plugins/GMSidebar/data/PlayerStatus.json", nlohmann::json::object());
+    for (nlohmann::json::const_iterator it = json.begin(); it != json.end(); ++it) {
+        if (it.value().is_boolean()) {
+            auto uuid                  = mce::UUID::fromString(it.key());
+            mPlayerSidebarStatus[uuid] = it.value().get<bool>();
+        }
+    }
 }
 
 void sendSidebar(GMLIB_Player* pl) {
@@ -43,11 +54,11 @@ void sendSidebarToClients() {
     GMLIB_Level::getInstance()->forEachPlayer([&](Player& player) -> bool {
         auto pl = (GMLIB_Player*)&player;
         pl->removeClientSidebar();
-        if (!mPlayerSidebarStatus.contains(pl->getUuid().asString())) {
-            mPlayerSidebarStatus[pl->getUuid().asString()] = true;
+        if (!mPlayerSidebarStatus.contains(pl->getUuid())) {
+            mPlayerSidebarStatus[pl->getUuid()] = true;
             saveSidebarStatus();
         }
-        if (mPlayerSidebarStatus[pl->getUuid().asString()]) {
+        if (mPlayerSidebarStatus[pl->getUuid()]) {
             sendSidebar(pl);
         }
         return true;
@@ -74,6 +85,7 @@ void init() {
             } else {
                 mDataMap[num] = info.data[0];
             }
+            GMLIB::Server::PlaceholderAPI::translate(mDataMap[num]);
         } catch (...) {}
     }
     if (config.title.updateInverval > 0) {
@@ -101,26 +113,29 @@ void disablePlugin() {
     mScheduler.reset();
 }
 
-bool getPlayerSidebarSetting(mce::UUID mUUID) { return mPlayerSidebarStatus[mUUID.asString()]; }
-
-void dealPlayerSidebarSetting(mce::UUID mUUID, bool setting) {
-    mPlayerSidebarStatus[mUUID.asString()] = setting;
-    saveSidebarStatus();
-}
-
-
 void registerCommand() {
     auto& cmd = ll::command::CommandRegistrar::getInstance()
                     .getOrCreateCommand("sidebar", tr("sidebar.command.desc"), CommandPermissionLevel::Any);
     cmd.overload().execute<[&](CommandOrigin const& origin, CommandOutput& output) {
         auto entity = (GMLIB_Actor*)origin.getEntity();
         if (entity && entity->isPlayer()) {
-            auto pl                                        = (Player*)entity;
-            auto res                                       = !mPlayerSidebarStatus[pl->getUuid().asString()];
-            mPlayerSidebarStatus[pl->getUuid().asString()] = res;
+            auto pl                             = (Player*)entity;
+            auto res                            = !mPlayerSidebarStatus[pl->getUuid()];
+            mPlayerSidebarStatus[pl->getUuid()] = res;
             saveSidebarStatus();
             return output.success(res ? tr("sidebar.command.toggle.on") : tr("sidebar.command.toggle.off"));
         }
         return output.error(tr("sidebar.command.console"));
     }>();
+}
+
+namespace GMSidebar {
+
+bool isPlayerSidebarEnabled(mce::UUID const& uuid) { return mPlayerSidebarStatus[uuid]; }
+
+void setPlayerSidebarEnabled(mce::UUID const& uuid, bool setting) {
+    mPlayerSidebarStatus[uuid] = setting;
+    saveSidebarStatus();
+}
+
 }

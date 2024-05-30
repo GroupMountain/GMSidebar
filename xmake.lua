@@ -49,13 +49,15 @@ target("GMSidebar") -- Change this to your plugin name.
     )
     add_defines(
         "NOMINMAX",
-        "UNICODE"
+        "UNICODE",
+        "GMSidebar_EXPORTS"
     )
     add_files(
         "src/**.cpp"
     )
     add_includedirs(
-        "src"
+        "src",
+        "include"
     )
     add_packages(
         "levilamina",

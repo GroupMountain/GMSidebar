@@ -14,7 +14,3 @@ extern void saveSidebarStatus();
 extern void registerCommand();
 
 extern std::string tr(std::string key, std::vector<std::string> data = {}, std::string translateKey = "%0$s");
-
-extern "C" __declspec(dllexport) bool getPlayerSidebarSetting(mce::UUID mUUID);
-
-extern "C" __declspec(dllexport) void dealPlayerSidebarSetting(mce::UUID mUUID, bool setting);
