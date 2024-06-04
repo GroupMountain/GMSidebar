@@ -2,7 +2,7 @@ on:
   pull_request:
   push:
   workflow_dispatch:
-  
+
 jobs:
   build:
     runs-on: windows-latest
@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: xmake-io/github-action-setup-xmake@v1
-      
+
       - run: |
           xmake repo -u
 
@@ -36,3 +36,9 @@ jobs:
           name: PDB
           path: |
             bin/PDB/
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: SDK
+          path: |
+            bin/SDK/
