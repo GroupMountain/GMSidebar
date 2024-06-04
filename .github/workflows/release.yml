@@ -96,6 +96,11 @@ jobs:
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
+          append_body: true
+          body: |
+            | File | SHA256 |
+            | ---- | ------ |
+            | SDK.zip | ${{ steps.calculate-sha256.outputs.release }} |
           files: |
             release/${{ github.event.repository.name }}-windows-x64.zip
             release/PDB/${{ github.event.repository.name }}.pdb 
