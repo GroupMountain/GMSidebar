@@ -65,6 +65,12 @@ jobs:
           name: PDB
           path: release/PDB/
 
+      - name: Download SDK artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: SDK
+          path: release/SDK/
+
       - name: Copy additional files
         run: |
           cp LICENSE README.md release/Plugin/
