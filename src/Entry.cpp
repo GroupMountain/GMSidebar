@@ -1,9 +1,8 @@
 #include "Entry.h"
 #include "Global.h"
 #include "Language.h"
-#include "ll/api/Config.h"
 
-ll::Logger logger(PLUGIN_NAME);
+ll::Logger logger(MOD_NAME);
 
 namespace gmsidebar {
 
@@ -13,16 +12,16 @@ std::unique_ptr<Entry>& Entry::getInstance() {
 }
 
 bool Entry::load() {
-    // Code for loading the plugin goes here.
+    // Code for loading the mod goes here.
     return true;
 }
 
 bool Entry::enable() {
-    // Code for enabling the plugin goes here.
+    // Code for enabling the mod goes here.
     mConfig.emplace();
     ll::config::loadConfig(*mConfig, getSelf().getConfigDir() / u8"config.json");
     ll::config::saveConfig(*mConfig, getSelf().getConfigDir() / u8"config.json");
-    mI18n = std::make_unique<GMLIB::Files::I18n::LangI18n>(getSelf().getLangDir());
+    mI18n = std::make_unique<gmlib::i18n::LangI18n>(getSelf().getLangDir());
     mI18n->updateOrCreateLanguage("zh_CN", zh_CN);
     mI18n->loadAllLanguages();
     mI18n->chooseLanguage(mConfig->language);
@@ -37,19 +36,19 @@ bool Entry::enable() {
 }
 
 bool Entry::disable() {
-    // Code for disabling the plugin goes here.
+    // Code for disabling the mod goes here.
     saveSidebarStatus();
     mConfig.reset();
     mI18n.reset();
-    disablePlugin();
+    disableMod();
     return true;
 }
 
 bool Entry::unload() {
-    // Code for disabling the plugin goes here.
+    // Code for disabling the mod goes here.
     return true;
 }
 
 } // namespace gmsidebar
 
-LL_REGISTER_PLUGIN(gmsidebar::Entry, gmsidebar::Entry::getInstance());
+LL_REGISTER_MOD(gmsidebar::Entry, gmsidebar::Entry::getInstance());

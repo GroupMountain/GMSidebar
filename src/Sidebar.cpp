@@ -24,12 +24,12 @@ void saveSidebarStatus() {
     for (auto& [key, val] : mPlayerSidebarStatus) {
         json[key.asString()] = val;
     }
-    GMLIB::Files::JsonFile::writeFile("./plugins/GMSidebar/data/PlayerStatus.json", json);
+    gmlib::utils::JsonUtils::writeFile("./mods/GMSidebar/data/PlayerStatus.json", json);
 }
 
 void loadSidebarStatus() {
     auto json =
-        GMLIB::Files::JsonFile::initJson("./plugins/GMSidebar/data/PlayerStatus.json", nlohmann::json::object());
+        gmlib::utils::JsonUtils::initJson("./mods/GMSidebar/data/PlayerStatus.json", nlohmann::json::object());
     for (nlohmann::json::const_iterator it = json.begin(); it != json.end(); ++it) {
         if (it.value().is_boolean()) {
             auto uuid                  = mce::UUID::fromString(it.key());
@@ -38,21 +38,21 @@ void loadSidebarStatus() {
     }
 }
 
-void sendSidebar(GMLIB_Player* pl) {
+void sendSidebar(gmlib::world::Player* pl) {
     std::vector<std::pair<std::string, int>> dataList;
     for (auto& [mapIndex, mapData] : mDataMap) {
         dataList.push_back({mapData, mapIndex});
     }
     for (auto& [data, index] : dataList) {
-        GMLIB::Server::PlaceholderAPI::translate(data, pl);
+        gmlib::tools::PlaceholderAPI::translate(data, pl);
     }
-    auto title = GMLIB::Server::PlaceholderAPI::translateString(mTitle, pl);
+    auto title = gmlib::tools::PlaceholderAPI::translateString(mTitle, pl);
     pl->setClientSidebar(title, dataList, mOrder);
 }
 
 void sendSidebarToClients() {
-    GMLIB_Level::getInstance()->forEachPlayer([&](Player& player) -> bool {
-        auto pl = (GMLIB_Player*)&player;
+    gmlib::world::Level::getInstance()->forEachPlayer([&](Player& player) -> bool {
+        auto pl = (gmlib::world::Player*)&player;
         pl->removeClientSidebar();
         if (!mPlayerSidebarStatus.contains(pl->getUuid())) {
             mPlayerSidebarStatus[pl->getUuid()] = true;
@@ -85,7 +85,7 @@ void init() {
             } else {
                 mDataMap[num] = info.data[0];
             }
-            GMLIB::Server::PlaceholderAPI::translate(mDataMap[num]);
+            gmlib::tools::PlaceholderAPI::translate(mDataMap[num]);
         } catch (...) {}
     }
     if (config.title.updateInverval > 0) {
@@ -103,9 +103,9 @@ void init() {
     mScheduler->add<ll::schedule::RepeatTask>(1s, [] { sendSidebarToClients(); });
 }
 
-void disablePlugin() {
-    GMLIB_Level::getInstance()->forEachPlayer([&](Player& player) -> bool {
-        auto pl = (GMLIB_Player*)&player;
+void disableMod() {
+    gmlib::world::Level::getInstance()->forEachPlayer([&](Player& player) -> bool {
+        auto pl = (gmlib::world::Player*)&player;
         pl->removeClientSidebar();
         return true;
     });
@@ -117,7 +117,7 @@ void registerCommand() {
     auto& cmd = ll::command::CommandRegistrar::getInstance()
                     .getOrCreateCommand("sidebar", tr("sidebar.command.desc"), CommandPermissionLevel::Any);
     cmd.overload().execute<[&](CommandOrigin const& origin, CommandOutput& output) {
-        auto entity = (GMLIB_Actor*)origin.getEntity();
+        auto entity = (gmlib::world::Actor*)origin.getEntity();
         if (entity && entity->isPlayer()) {
             auto pl                             = (Player*)entity;
             auto res                            = !mPlayerSidebarStatus[pl->getUuid()];

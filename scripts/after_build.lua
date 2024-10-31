@@ -82,7 +82,7 @@ function string_formatter(str, variables)
     end)
 end
 
-function pack_plugin(target,plugin_define)
+function pack_mod(target,mod_define)
     import("lib.detect.find_file")
 
     local manifest_path = find_file("manifest.json", os.projectdir())
@@ -92,10 +92,10 @@ function pack_plugin(target,plugin_define)
         local pdbdir = path.join(os.projectdir(), "bin/PDB")
         local libdir = path.join(os.projectdir(), "bin/SDK/lib")
         local incdir = path.join(os.projectdir(), "bin/SDK")
-        local outputdir = path.join(bindir, plugin_define.pluginName)
-        local targetfile = path.join(outputdir, plugin_define.pluginFile)
-        local pdbfile = path.join(pdbdir, path.basename(plugin_define.pluginFile) .. ".pdb")
-        local libfile = path.join(libdir, path.basename(plugin_define.pluginFile) .. ".lib")
+        local outputdir = path.join(bindir, mod_define.modName)
+        local targetfile = path.join(outputdir, mod_define.modFile)
+        local pdbfile = path.join(pdbdir, path.basename(mod_define.modFile) .. ".pdb")
+        local libfile = path.join(libdir, path.basename(mod_define.modFile) .. ".lib")
         local manifestfile = path.join(outputdir, "manifest.json")
         local oritargetfile = target:targetfile()
         local oripdbfile = path.join(path.directory(oritargetfile), path.basename(oritargetfile) .. ".pdb")
@@ -113,9 +113,9 @@ function pack_plugin(target,plugin_define)
             os.cp(orilibfile, libfile)
         end
 
-        formattedmanifest = string_formatter(manifest, plugin_define)
+        formattedmanifest = string_formatter(manifest, mod_define)
         io.writefile(manifestfile,formattedmanifest)
-        cprint("${bright green}[Plugin Packer]: ${reset}plugin already generated to " .. outputdir)
+        cprint("${bright green}[Mod Packer]: ${reset}mod already generated to " .. outputdir)
     else
         cprint("${bright yellow}warn: ${reset}not found manifest.json in root dir!")
     end
@@ -123,7 +123,7 @@ end
 
 
 return {
-    pack_plugin = pack_plugin,
+    pack_mod = pack_mod,
     beautify_json = beautify_json,
     string_formatter = string_formatter
 }
