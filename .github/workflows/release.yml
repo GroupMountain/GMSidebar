@@ -55,11 +55,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Download Plugin
+      - name: Download Mod
         uses: actions/download-artifact@v3
         with:
           name: ${{ github.event.repository.name }}-windows-x64-${{ github.sha }}
-          path: release/Plugin/
+          path: release/Mod/
 
       - name: Download PDB
         uses: actions/download-artifact@v3
@@ -75,11 +75,11 @@ jobs:
 
       - name: Copy additional files
         run: |
-          cp LICENSE README.md release/Plugin/
+          cp LICENSE README.md release/Mod/
 
       - name: Archive release
         run: |
-          cd release/Plugin
+          cd release/Mod
           zip -r ../${{ github.event.repository.name }}-windows-x64.zip *
           cd ..
 

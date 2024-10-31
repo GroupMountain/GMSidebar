@@ -1,12 +1,12 @@
 #pragma once
-#include <include_all.h>
+#include <headers/include_all.h>
 
-#define PLUGIN_NAME "GMSidebar"
+#define MOD_NAME "GMSidebar"
 
 extern ll::Logger logger;
 
 extern void init();
-extern void disablePlugin();
+extern void disableMod();
 
 extern void loadSidebarStatus();
 extern void saveSidebarStatus();
