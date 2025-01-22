@@ -1,30 +1,30 @@
 #pragma once
 #include "Config.h"
 #include "Global.h"
-#include <ll/api/plugin/NativePlugin.h>
-#include <ll/api/plugin/RegisterHelper.h>
+#include <ll/api/mod/NativeMod.h>
+#include <ll/api/mod/RegisterHelper.h>
 
 namespace gmsidebar {
 
 class Entry {
 
 public:
-    static std::unique_ptr<Entry>& getInstance();
+    static Entry& getInstance();
 
-    Entry(ll::plugin::NativePlugin& self) : mSelf(self) {}
+    Entry() : mSelf(*ll::mod::NativeMod::current()) {}
 
-    [[nodiscard]] ll::plugin::NativePlugin& getSelf() const { return mSelf; }
+    [[nodiscard]] ll::mod::NativeMod& getSelf() const { return mSelf; }
 
-    /// @return True if the plugin is loaded successfully.
+    /// @return True if the mod is loaded successfully.
     bool load();
 
-    /// @return True if the plugin is enabled successfully.
+    /// @return True if the mod is enabled successfully.
     bool enable();
 
-    /// @return True if the plugin is disabled successfully.
+    /// @return True if the mod is disabled successfully.
     bool disable();
 
-    /// @return True if the plugin is unloaded successfully.
+    /// @return True if the mod is unloaded successfully.
     bool unload();
 
     Config& getConfig() { return mConfig.value(); }
@@ -36,7 +36,7 @@ public:
     }
 
 private:
-    ll::plugin::NativePlugin&                     mSelf;
+    ll::mod::NativeMod&                           mSelf;
     std::optional<Config>                         mConfig;
     std::unique_ptr<GMLIB::Files::I18n::LangI18n> mI18n;
 };

@@ -3,24 +3,24 @@
 #include "Language.h"
 #include "ll/api/Config.h"
 
-ll::Logger logger(PLUGIN_NAME);
-
 namespace gmsidebar {
 
-std::unique_ptr<Entry>& Entry::getInstance() {
-    static std::unique_ptr<Entry> instance;
+Entry& Entry::getInstance() {
+    static Entry instance;
     return instance;
 }
 
 bool Entry::load() {
-    // Code for loading the plugin goes here.
+    // Code for loading the mod goes here.
     return true;
 }
 
 bool Entry::enable() {
-    // Code for enabling the plugin goes here.
+    // Code for enabling the mod goes here.
     mConfig.emplace();
-    ll::config::loadConfig(*mConfig, getSelf().getConfigDir() / u8"config.json");
+    try {
+        ll::config::loadConfig(*mConfig, getSelf().getConfigDir() / u8"config.json");
+    } catch (...) {}
     ll::config::saveConfig(*mConfig, getSelf().getConfigDir() / u8"config.json");
     mI18n = std::make_unique<GMLIB::Files::I18n::LangI18n>(getSelf().getLangDir());
     mI18n->updateOrCreateLanguage("zh_CN", zh_CN);
@@ -30,26 +30,26 @@ bool Entry::enable() {
     loadSidebarStatus();
     init();
     registerCommand();
-    logger.info("GMSidebar Loaded!");
-    logger.info("Author: GroupMountain");
-    logger.info("Repository: https://github.com/GroupMountain/GMSidebar");
+    getSelf().getLogger().info("GMSidebar Loaded!");
+    getSelf().getLogger().info("Author: GroupMountain");
+    getSelf().getLogger().info("Repository: https://github.com/GroupMountain/GMSidebar");
     return true;
 }
 
 bool Entry::disable() {
-    // Code for disabling the plugin goes here.
+    // Code for disabling the mod goes here.
     saveSidebarStatus();
     mConfig.reset();
     mI18n.reset();
-    disablePlugin();
+    disableMod();
     return true;
 }
 
 bool Entry::unload() {
-    // Code for disabling the plugin goes here.
+    // Code for disabling the mod goes here.
     return true;
 }
 
 } // namespace gmsidebar
 
-LL_REGISTER_PLUGIN(gmsidebar::Entry, gmsidebar::Entry::getInstance());
+LL_REGISTER_MOD(gmsidebar::Entry, gmsidebar::Entry::getInstance());
