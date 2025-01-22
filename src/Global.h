@@ -1,9 +1,7 @@
 #pragma once
-#include <headers/include_all.h>
+#include <include_all.h>
 
 #define MOD_NAME "GMSidebar"
-
-extern ll::Logger logger;
 
 extern void init();
 extern void disableMod();

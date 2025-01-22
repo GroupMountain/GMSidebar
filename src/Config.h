@@ -2,6 +2,7 @@
 #include "Global.h"
 #include <unordered_map>
 
+namespace gmsidebar {
 struct Config {
     int version = 1;
 
@@ -26,3 +27,4 @@ struct Config {
         {"4", DataInfo{{"Score1: %player_score_test1%", "Score2: %player_score_test2%"}, 3}}
     };
 };
+} // namespace gmsidebar

@@ -2,12 +2,10 @@
 #include "Global.h"
 #include "Language.h"
 
-ll::Logger logger(MOD_NAME);
-
 namespace gmsidebar {
 
-std::unique_ptr<Entry>& Entry::getInstance() {
-    static std::unique_ptr<Entry> instance;
+Entry& Entry::getInstance() {
+    static Entry instance;
     return instance;
 }
 
@@ -19,9 +17,11 @@ bool Entry::load() {
 bool Entry::enable() {
     // Code for enabling the mod goes here.
     mConfig.emplace();
-    ll::config::loadConfig(*mConfig, getSelf().getConfigDir() / u8"config.json");
+    try {
+        ll::config::loadConfig(*mConfig, getSelf().getConfigDir() / u8"config.json");
+    } catch (...) {}
     ll::config::saveConfig(*mConfig, getSelf().getConfigDir() / u8"config.json");
-    mI18n = std::make_unique<gmlib::i18n::LangI18n>(getSelf().getLangDir());
+    mI18n = std::make_unique<GMLIB::Files::I18n::LangI18n>(getSelf().getLangDir());
     mI18n->updateOrCreateLanguage("zh_CN", zh_CN);
     mI18n->loadAllLanguages();
     mI18n->chooseLanguage(mConfig->language);
@@ -29,9 +29,9 @@ bool Entry::enable() {
     loadSidebarStatus();
     init();
     registerCommand();
-    logger.info("GMSidebar Loaded!");
-    logger.info("Author: GroupMountain");
-    logger.info("Repository: https://github.com/GroupMountain/GMSidebar");
+    getSelf().getLogger().info("GMSidebar Loaded!");
+    getSelf().getLogger().info("Author: GroupMountain");
+    getSelf().getLogger().info("Repository: https://github.com/GroupMountain/GMSidebar");
     return true;
 }
 
