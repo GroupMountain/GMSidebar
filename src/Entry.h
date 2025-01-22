@@ -1,8 +1,6 @@
 #pragma once
 #include "Config.h"
 #include "Global.h"
-#include <ll/api/mod/NativeMod.h>
-#include <ll/api/mod/RegisterHelper.h>
 
 namespace gmsidebar {
 
@@ -29,7 +27,7 @@ public:
 
     Config& getConfig() { return mConfig.value(); }
 
-    std::unique_ptr<GMLIB::Files::I18n::LangI18n>& getI18n() { return mI18n; }
+    std::unique_ptr<gmlib::i18n::LangI18n>& getI18n() { return mI18n; }
 
     std::string translate(std::string key, std::vector<std::string> data = {}, std::string translateKey = "%0$s") {
         return mI18n->translate(key, data, translateKey);

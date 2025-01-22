@@ -1,5 +1,5 @@
 #pragma once
-#include <include_all.h>
+#include <headers/include_all.h>
 
 #define MOD_NAME "GMSidebar"
 
