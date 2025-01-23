@@ -23,12 +23,14 @@ void saveSidebarStatus() {
     for (auto& [key, val] : mPlayerSidebarStatus) {
         json[key.asString()] = val;
     }
-    GMLIB::Files::JsonFile::writeFile("./plugins/GMSidebar/data/PlayerStatus.json", json);
+    GMLIB::Files::JsonFile::writeFile(ll::mod::NativeMod::current()->getDataDir() / "PlayerStatus.json", json);
 }
 
 void loadSidebarStatus() {
-    auto json =
-        GMLIB::Files::JsonFile::initJson("./plugins/GMSidebar/data/PlayerStatus.json", nlohmann::json::object());
+    auto json = GMLIB::Files::JsonFile::initJson(
+        ll::mod::NativeMod::current()->getDataDir() / "PlayerStatus.json",
+        nlohmann::json::object()
+    );
     for (nlohmann::json::const_iterator it = json.begin(); it != json.end(); ++it) {
         if (it.value().is_boolean()) {
             auto uuid                  = mce::UUID::fromString(it.key());
