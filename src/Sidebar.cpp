@@ -1,6 +1,7 @@
 #include "Entry.h"
 #include "GMSidebarAPI.h"
 #include "Global.h"
+#include "ll/api/thread/ServerThreadExecutor.h"
 
 std::string                          mTitle;
 std::unordered_map<int, std::string> mDataMap;
@@ -99,10 +100,14 @@ void init() {
     } else {
         mTitle = config.title.data[0];
     }
-    ll::coro::keepThis([=]() -> ll::coro::CoroTask<> {
+    ll::coro::keepThis([]() -> ll::coro::CoroTask<> {
         while (true) {
             co_await 1s;
-            sendSidebarToClients();
+            ll::coro::keepThis([]() -> ll::coro::CoroTask<> {
+                co_await 1_tick;
+                sendSidebarToClients();
+                co_return;
+            }).launch(ll::thread::ServerThreadExecutor::getDefault());
         }
         co_return;
     }).launch(mThreadPool);
