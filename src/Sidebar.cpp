@@ -105,7 +105,7 @@ void init() {
             sendSidebarToClients();
         }
         co_return;
-    }).launch(mThreadPool);
+    }).launch(ll::thread::ServerThreadExecutor::getDefault());
 }
 
 void disableMod() {
