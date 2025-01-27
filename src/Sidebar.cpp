@@ -73,7 +73,7 @@ void init() {
             if (info.updateInverval > 0) {
                 ll::coro::keepThis([=]() -> ll::coro::CoroTask<> {
                     while (true) {
-                        co_await std::chrono::seconds::duration(info.updateInverval);
+                        co_await std::chrono::seconds{info.updateInverval};
                         mDataMap[num] = info.data[mDataIndex[num]];
                         mDataIndex[num]++;
                         if (mDataIndex[num] >= info.data.size()) mDataIndex[num] = 0;
@@ -89,7 +89,7 @@ void init() {
     if (config.title.updateInverval > 0) {
         ll::coro::keepThis([=]() -> ll::coro::CoroTask<> {
             while (true) {
-                co_await std::chrono::seconds::duration(config.title.updateInverval);
+                co_await std::chrono::seconds(config.title.updateInverval);
                 mTitle = config.title.data[mTitleIndex];
                 mTitleIndex++;
                 if (mTitleIndex >= config.title.data.size()) mTitleIndex = 0;
@@ -102,10 +102,14 @@ void init() {
     ll::coro::keepThis([=]() -> ll::coro::CoroTask<> {
         while (true) {
             co_await 1s;
-            sendSidebarToClients();
+            []() -> ll::coro::CoroTask<> {
+                sendSidebarToClients();
+                co_return;
+            }()
+                        .syncLaunch(ll::thread::ServerThreadExecutor::getDefault());
         }
         co_return;
-    }).launch(ll::thread::ServerThreadExecutor::getDefault());
+    }).launch(mThreadPool);
 }
 
 void disableMod() {

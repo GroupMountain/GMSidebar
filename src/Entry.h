@@ -1,6 +1,7 @@
 #pragma once
 #include "Config.h"
 #include "Global.h"
+#include "include_all.h"
 
 namespace gmsidebar {
 
