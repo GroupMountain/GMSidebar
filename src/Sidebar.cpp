@@ -52,12 +52,12 @@ void sendSidebarToClients() {
     GMLIB_Level::getInstance()->forEachPlayer([&](Player& player) -> bool {
         if (player.isSimulatedPlayer()) return true;
         auto pl = (GMLIB_Player*)&player;
-        pl->removeClientSidebar();
         if (!mPlayerSidebarStatus.contains(pl->getUuid())) {
             mPlayerSidebarStatus[pl->getUuid()] = true;
             saveSidebarStatus();
         }
         if (mPlayerSidebarStatus[pl->getUuid()]) {
+            pl->removeClientSidebar();
             sendSidebar(pl);
         }
         return true;
