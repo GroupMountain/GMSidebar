@@ -127,7 +127,7 @@ void registerCommand() {
     cmd.overload().execute([&](CommandOrigin const& origin, CommandOutput& output) {
         auto entity = (GMLIB_Actor*)origin.getEntity();
         if (entity && entity->isPlayer()) {
-            auto pl                             = (Player*)entity;
+            auto pl                             = (GMLIB_Player*)entity;
             auto res                            = !mPlayerSidebarStatus[pl->getUuid()];
             mPlayerSidebarStatus[pl->getUuid()] = res;
             if(!res){
