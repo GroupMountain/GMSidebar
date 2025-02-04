@@ -130,6 +130,9 @@ void registerCommand() {
             auto pl                             = (Player*)entity;
             auto res                            = !mPlayerSidebarStatus[pl->getUuid()];
             mPlayerSidebarStatus[pl->getUuid()] = res;
+            if(!res){
+                pl->removeClientSidebar();
+            }
             saveSidebarStatus();
             return output.success(res ? tr("sidebar.command.toggle.on") : tr("sidebar.command.toggle.off"));
         }
