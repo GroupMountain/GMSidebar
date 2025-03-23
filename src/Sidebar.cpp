@@ -150,6 +150,12 @@ bool isPlayerSidebarEnabled(mce::UUID const& uuid) { return mPlayerSidebarStatus
 
 void setPlayerSidebarEnabled(mce::UUID const& uuid, bool setting) {
     mPlayerSidebarStatus[uuid] = setting;
+    if (!setting) {
+        auto player = (gmlib::world::actor::GMPlayer*)ll::service::getLevel()->getPlayer(uuid);
+        if (player) {
+            player->removeClientSidebar();
+        }
+    }
     saveSidebarStatus();
 }
 
