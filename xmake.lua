@@ -8,9 +8,9 @@ if not has_config("vs_runtime") then
 end
 
 -- Option 1: Use the latest version of LeviLamina released on GitHub.
-add_requires("levilamina 1.0.0-rc.3")
-add_requires("levibuildscript 0.3.0")
-add_requires("gmlib 0.13.10")
+add_requires("levilamina", {configs = {target_type = "server"}})
+add_requires("levibuildscript")
+add_requires("gmlib")
 
 target("GMSidebar") -- Change this to your mod name.
     add_cxflags(

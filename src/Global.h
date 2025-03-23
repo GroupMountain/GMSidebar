@@ -1,7 +1,7 @@
 #pragma once
 // #include <include_all.h>
-#include "GMLIB/Server/PlayerAPI.h"
-#include "GMLIB/include_ll.h"
+//#include "GMLIB/Server/PlayerAPI.h"
+#include "gmlib/include_all.h"
 #include "mc/world/scores/ObjectiveSortOrder.h"
 
 

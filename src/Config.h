@@ -22,9 +22,8 @@ struct Config {
 
     std::unordered_map<std::string, DataInfo> sidebarInfo = {
         {"1", DataInfo{{"§aConfig Example", "§bConfig Example", "§cConfig Example"}, 1} },
-        {"2", DataInfo{{"Name: %player_name%", "Ping: %player_ping%ms"}, 2}                },
-        {"3", DataInfo{{"Mspt: %server_mspt_colored_2%", "Tps: %server_tps_colored_2%"}, 3}},
-        {"4", DataInfo{{"Score1: %player_score_test1%", "Score2: %player_score_test2%"}, 3}}
+        {"2", DataInfo{{"Name: %player_realname%", "Ping: %player_ping%ms"}, 2}                },
+        {"3", DataInfo{{"Mspt: %server_mspt_colored%", "Tps: %server_tps_colored%"}, 3}}
     };
 };
 } // namespace gmsidebar
