@@ -1,6 +1,8 @@
 #include "Entry.h"
+#include "GMSidebarAPI.h"
 #include "Global.h"
 #include "Language.h"
+#include "legacyRemoteCall/RemoteCallAPI.h"
 
 namespace gmsidebar {
 
@@ -30,6 +32,14 @@ bool Entry::enable() {
     getSelf().getLogger().info("GMSidebar Loaded!");
     getSelf().getLogger().info("Author: GroupMountain");
     getSelf().getLogger().info("Repository: https://github.com/GroupMountain/GMSidebar");
+    RemoteCall::exportAs("GMSidebar", "isPlayerSidebarEnabled", [](std::string const& uuid) -> bool {
+        auto uid = mce::UUID::fromString(uuid);
+        return GMSidebar::isPlayerSidebarEnabled(uid);
+    });
+    RemoteCall::exportAs("GMSidebar", "setPlayerSidebarEnabled", [](std::string const& uuid, bool enable) -> void {
+        auto uid = mce::UUID::fromString(uuid);
+        GMSidebar::setPlayerSidebarEnabled(uid, enable);
+    });
     return true;
 }
 
