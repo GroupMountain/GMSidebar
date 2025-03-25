@@ -17,15 +17,13 @@ bool Entry::load() {
 bool Entry::enable() {
     // Code for enabling the mod goes here.
     mConfig.emplace();
-    try {
-        ll::config::loadConfig(*mConfig, getSelf().getConfigDir() / u8"config.json");
-    } catch (...) {}
-    ll::config::saveConfig(*mConfig, getSelf().getConfigDir() / u8"config.json");
-    mI18n = std::make_unique<gmlib::i18n::LangI18n>(getSelf().getLangDir());
+    if (!ll::config::loadConfig(*mConfig, getSelf().getConfigDir() / u8"config.json")) {
+        ll::config::saveConfig(*mConfig, getSelf().getConfigDir() / u8"config.json");
+    }
+    mI18n.emplace(getSelf().getLangDir(), "zh_CN");
     mI18n->updateOrCreateLanguage("zh_CN", zh_CN);
     mI18n->loadAllLanguages();
     mI18n->chooseLanguage(mConfig->language);
-    mI18n->setDefaultLanguage("zh_CN");
     loadSidebarStatus();
     init();
     registerCommand();

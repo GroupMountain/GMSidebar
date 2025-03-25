@@ -27,16 +27,14 @@ public:
 
     Config& getConfig() { return mConfig.value(); }
 
-    std::unique_ptr<gmlib::i18n::LangI18n>& getI18n() { return mI18n; }
-
-    std::string translate(std::string key, std::vector<std::string> data = {}, std::string translateKey = "%0$s") {
-        return mI18n->translate(key, data, translateKey);
-    }
+    gmlib::i18n::LangI18n& getI18n() { return *mI18n; }
 
 private:
-    ll::mod::NativeMod&                    mSelf;
-    std::optional<Config>                  mConfig;
-    std::unique_ptr<gmlib::i18n::LangI18n> mI18n;
+    ll::mod::NativeMod&                  mSelf;
+    std::optional<Config>                mConfig;
+    std::optional<gmlib::i18n::LangI18n> mI18n;
 };
 
 } // namespace gmsidebar
+
+LANGI18N_LITERALS(gmsidebar::Entry::getInstance().getI18n())

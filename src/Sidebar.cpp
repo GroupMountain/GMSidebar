@@ -17,10 +17,6 @@ ll::thread::ThreadPoolExecutor      mThreadPool = ll::thread::ThreadPoolExecutor
 
 using namespace ll::chrono_literals;
 
-std::string tr(std::string key, std::vector<std::string> data, std::string translateKey) {
-    return gmsidebar::Entry::getInstance().translate(key, data, translateKey);
-}
-
 void saveSidebarStatus() {
     nlohmann::json json;
     for (auto& [key, val] : mPlayerSidebarStatus) {
@@ -127,7 +123,7 @@ void disableMod() {
 
 void registerCommand() {
     auto& cmd = ll::command::CommandRegistrar::getInstance()
-                    .getOrCreateCommand("sidebar", tr("sidebar.command.desc"), CommandPermissionLevel::Any);
+                    .getOrCreateCommand("sidebar", "sidebar.command.desc"_tr(), CommandPermissionLevel::Any);
     cmd.overload().execute([&](CommandOrigin const& origin, CommandOutput& output) {
         auto entity = (gmlib::world::actor::GMActor*)origin.getEntity();
         if (entity && entity->isPlayer()) {
@@ -138,9 +134,9 @@ void registerCommand() {
                 pl->removeClientSidebar();
             }
             saveSidebarStatus();
-            return output.success(res ? tr("sidebar.command.toggle.on") : tr("sidebar.command.toggle.off"));
+            return output.success(res ? "sidebar.command.toggle.on"_tr() : "sidebar.command.toggle.off"_tr());
         }
-        return output.error(tr("sidebar.command.console"));
+        return output.error("sidebar.command.console"_tr());
     });
 }
 
