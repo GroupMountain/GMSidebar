@@ -1,7 +1,7 @@
 #include "Entry.h"
 #include "GMSidebarAPI.h"
 #include "Global.h"
-#include "Language.h"
+#include "resource.h"
 #include "legacyRemoteCall/RemoteCallAPI.h"
 
 namespace gmsidebar {

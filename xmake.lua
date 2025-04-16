@@ -26,7 +26,8 @@ target("GMSidebar") -- Change this to your mod name.
         "GMSidebar_EXPORTS"
     )
     add_files(
-        "src/**.cpp"
+        "src/**.cpp",
+        "src/**.rc"
     )
     add_includedirs(
         "src",
