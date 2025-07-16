@@ -37,4 +37,4 @@ private:
 
 } // namespace gmsidebar
 
-LANGI18N_LITERALS(gmsidebar::Entry::getInstance().getI18n())
+GMLIB_LANGI18N_LITERALS(gmsidebar::Entry::getInstance().getI18n())
