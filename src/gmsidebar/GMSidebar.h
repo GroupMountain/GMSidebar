@@ -97,6 +97,8 @@ public:
     virtual Config& getConfig();
     virtual void    loadConfig(std::optional<std::filesystem::path> const& path);
     virtual void    saveConfig(std::optional<std::filesystem::path> const& path);
+    virtual void    loadData(std::optional<std::filesystem::path> const& path);
+    virtual void    saveData(std::optional<std::filesystem::path> const& path);
     virtual bool    isPlayerSidebarEnabled(mce::UUID const& uuid);
     virtual void    setPlayerSidebarEnabled(mce::UUID const& uuid, bool enable);
     virtual void    clearPlayerCache(mce::UUID const& uuid);

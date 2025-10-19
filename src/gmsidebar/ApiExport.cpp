@@ -20,6 +20,14 @@ void Entry::exportApi() {
     LegacyRemoteCall::exportAs("GMSidebar", "saveConfigFromPath", [](std::string const& path) {
         GMSidebar::getInstance().saveConfig(path);
     });
+    LegacyRemoteCall::exportAs("GMSidebar", "loadData", []() { GMSidebar::getInstance().loadData(std::nullopt); });
+    LegacyRemoteCall::exportAs("GMSidebar", "saveData", []() { GMSidebar::getInstance().saveData(std::nullopt); });
+    LegacyRemoteCall::exportAs("GMSidebar", "loadDataFromPath", [](std::string const& path) {
+        GMSidebar::getInstance().loadData(path);
+    });
+    LegacyRemoteCall::exportAs("GMSidebar", "saveDataFromPath", [](std::string const& path) {
+        GMSidebar::getInstance().saveData(path);
+    });
     LegacyRemoteCall::exportAs("GMSidebar", "isPlayerSidebarEnabled", [](std::string const& uuid) {
         return GMSidebar::getInstance().isPlayerSidebarEnabled(mce::UUID::fromString(uuid));
     });

@@ -9,7 +9,6 @@
 #include <ll/api/i18n/I18n.h>
 #include <mc/world/actor/player/Player.h>
 
-
 namespace gmsidebar {
 
 void Entry::registerCmd() {
@@ -79,6 +78,8 @@ void Entry::registerCmd() {
         if (auto& instance = GMSidebar::getInstance(); instance.isEnabled()) {
             instance.loadConfig(std::nullopt);
             instance.saveConfig(std::nullopt);
+            instance.loadData(std::nullopt);
+            instance.saveData(std::nullopt);
             output.success("The sidebar config has been reloaded."_trl(origin.getLocaleCode()));
         } else {
             output.error("The sidebar mod is not enabled."_trl(origin.getLocaleCode()));

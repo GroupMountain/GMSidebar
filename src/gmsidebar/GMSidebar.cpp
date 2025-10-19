@@ -125,10 +125,8 @@ public:
         }
     }
     void saveConfig(std::filesystem::path const& path) { ll::config::saveConfig(mConfig, path); }
-    void loadData() {
-        auto& selfMod = Entry::getInstance().getSelf();
-        auto& logger  = selfMod.getLogger();
-        auto  path    = selfMod.getDataDir() / u8"data.nbt";
+    void loadData(std::filesystem::path const& path) {
+        auto& logger = Entry::getInstance().getSelf().getLogger();
         try {
             if (auto content = ll::file_utils::readFile(path, true); content) {
                 if (auto nbt = CompoundTag::fromBinaryNbt(*content); nbt) {
@@ -150,9 +148,9 @@ public:
             ll::error_utils::printCurrentException(logger);
         }
     }
-    void saveData() {
+    void saveData(std::filesystem::path const& path) {
         ll::file_utils::writeFile(
-            Entry::getInstance().getSelf().getDataDir() / u8"data.nbt",
+            path,
             ll::reflection::serialize<CompoundTagVariant>(mPlayerSidebarEnabled)->get<CompoundTag>().toBinaryNbt(),
             true
         );
@@ -328,6 +326,14 @@ void GMSidebar::saveConfig(std::optional<std::filesystem::path> const& path) {
     if (!pImpl) throw std::runtime_error("GMSidebar is not enabled");
     pImpl->saveConfig(path.value_or(Entry::getInstance().getSelf().getConfigDir() / u8"config.json"));
 }
+void GMSidebar::loadData(std::optional<std::filesystem::path> const& path) {
+    if (!pImpl) throw std::runtime_error("GMSidebar is not enabled");
+    pImpl->loadData(path.value_or(Entry::getInstance().getSelf().getConfigDir() / u8"data.nbt"));
+}
+void GMSidebar::saveData(std::optional<std::filesystem::path> const& path) {
+    if (!pImpl) throw std::runtime_error("GMSidebar is not enabled");
+    pImpl->saveData(path.value_or(Entry::getInstance().getSelf().getConfigDir() / u8"data.nbt"));
+}
 bool GMSidebar::isPlayerSidebarEnabled(mce::UUID const& uuid) {
     if (!pImpl) throw std::runtime_error("GMSidebar is not enabled");
     if (auto it = pImpl->mPlayerSidebarEnabled.find(uuid); it != pImpl->mPlayerSidebarEnabled.end()) {
@@ -349,6 +355,7 @@ void GMSidebar::setPlayerSidebarEnabled(mce::UUID const& uuid, bool enable) {
             }
         }
     }
+    saveData(std::nullopt);
 }
 void GMSidebar::clearPlayerCache(mce::UUID const& uuid) {
     if (!pImpl) throw std::runtime_error("GMSidebar is not enabled");
