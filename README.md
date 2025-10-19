@@ -41,6 +41,15 @@
   - uuid: string - 玩家 UUID
 - `clearAllPlayerCache` - 清除所有玩家的缓存
 
+## Placeholder
+
+> 注: 仅在侧边栏中生效
+
+- `currentIndex` - 当前选中的索引
+- `rawContent` - 原始内容
+- `updateInterval` - 更新间隔
+- `contentSize` - 索引长度
+
 ## 开源许可
 
 ### 源代码可用性
