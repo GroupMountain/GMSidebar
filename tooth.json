@@ -1,7 +1,7 @@
 {
     "format_version": 2,
     "tooth": "github.com/GroupMountain/GMSidebar",
-    "version": "0.13.15",
+    "version": "1.0.0",
     "info": {
         "name": "GMSidebar",
         "description": "High Performance Sidebar Mod",
@@ -13,10 +13,10 @@
             "gmlib"
         ]
     },
-    "asset_url": "https://github.com/GroupMountain/GMSidebar/releases/download/v0.13.15/GMSidebar-windows-x64.zip",
+    "asset_url": "https://github.com/GroupMountain/GMSidebar/releases/download/v$(version)/GMSidebar-windows-x64.zip",
     "dependencies": {
-        "github.com/LiteLDev/LeviLamina": ">=1.4.0",
-        "github.com/GroupMountain/GMLIB": ">= 1.4.0"
+        "github.com/LiteLDev/LeviLamina": ">=1.5.0",
+        "github.com/GroupMountain/GMLIB": ">=1.5.0"
     },
     "files": {
         "place": [

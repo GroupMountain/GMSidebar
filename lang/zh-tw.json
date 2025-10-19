@@ -1,0 +1,20 @@
+{
+    "Turn on or off the sidebar": "開啟或關閉側邊欄",
+    "The sidebar mod is not enabled.": "側邊欄模組未啟用。",
+    "You must be a player to execute this command.": "你必須是一名玩家才能執行此指令。",
+    "The sidebar is now enabled.": "側邊欄現已啟用。",
+    "The sidebar is now disabled.": "側邊欄現已停用。",
+    "The sidebar cache has been cleared.": "側邊欄快取已清除。",
+    "You don't have permission to execute this command.": "你沒有權限執行此指令。",
+    "The sidebar mod is now disabled.": "側邊欄模組現已停用。",
+    "The sidebar mod is already disabled.": "側邊欄模組已停用。",
+    "The sidebar mod is now enabled.": "側邊欄模組現已啟用。",
+    "The sidebar mod is already enabled.": "側邊欄模組已啟用。",
+    "The sidebar config has been reloaded.": "側邊欄設定已重新載入。",
+    "No target player found.": "未找到目標玩家。",
+    "The sidebar is now enabled for: {0}": "側邊欄已為以下玩家啟用：{0}",
+    "The sidebar is now disabled for: {0}": "側邊欄已為以下玩家停用：{0}",
+    "The sidebar cache has been cleared for: {0}": "已清除以下玩家的側邊欄快取：{0}",
+    "The sidebar is currently enabled for: {0}": "側邊欄目前為以下玩家啟用：{0}",
+    "The sidebar is currently disabled for: {0}": "側邊欄目前為以下玩家停用：{0}"
+}

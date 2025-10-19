@@ -1,0 +1,20 @@
+{
+    "Turn on or off the sidebar": "Turn on or off the sidebar",
+    "The sidebar mod is not enabled.": "The sidebar mod is not enabled.",
+    "You must be a player to execute this command.": "You must be a player to execute this command.",
+    "The sidebar is now enabled.": "The sidebar is now enabled.",
+    "The sidebar is now disabled.": "The sidebar is now disabled.",
+    "The sidebar cache has been cleared.": "The sidebar cache has been cleared.",
+    "You don't have permission to execute this command.": "You don't have permission to execute this command.",
+    "The sidebar mod is now disabled.": "The sidebar mod is now disabled.",
+    "The sidebar mod is already disabled.": "The sidebar mod is already disabled.",
+    "The sidebar mod is now enabled.": "The sidebar mod is now enabled.",
+    "The sidebar mod is already enabled.": "The sidebar mod is already enabled.",
+    "The sidebar config has been reloaded.": "The sidebar config has been reloaded.",
+    "No target player found.": "No target player found.",
+    "The sidebar is now enabled for: {0}": "The sidebar is now enabled for: {0}",
+    "The sidebar is now disabled for: {0}": "The sidebar is now disabled for: {0}",
+    "The sidebar cache has been cleared for: {0}": "The sidebar cache has been cleared for: {0}",
+    "The sidebar is currently enabled for: {0}": "The sidebar is currently enabled for: {0}",
+    "The sidebar is currently disabled for: {0}": "The sidebar is currently disabled for: {0}"
+}

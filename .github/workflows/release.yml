@@ -7,43 +7,36 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup XMake
+        uses: xmake-io/github-action-setup-xmake@v1
+      
+      - name: Cache
+        uses: actions/cache@v4
         with:
-          submodules: recursive
+          path: |
+            ~/AppData/Local/.xmake
+          key: xmake-${{ hashFiles('xmake.lua') }}
+          restore-keys: |
+            xmake-
 
-      - uses: actions/checkout@v4
+      - name: Update Repo
+        run: xmake repo -u
 
-      - uses: xmake-io/github-action-setup-xmake@v1
-        with:
-          xmake-version: 3.0.0
+      - name: Update Project
+        run: xmake f -a x64 -m release -p windows -v -y
 
-      - run: |
-          xmake repo -u
+      - name: Build Project
+        run: xmake -v -y
 
-      - run: |
-          xmake f -a x64 -m release -p windows -v -y
-
-      - run: |
-          xmake -w -y
-
-      - uses: actions/upload-artifact@v4
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ github.event.repository.name }}-windows-x64-${{ github.sha }}
           path: |
-            bin/DLL/
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: PDB
-          path: |
-            bin/PDB/
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: SDK
-          path: |
-            bin/SDK/
+            bin/
 
   upload-to-release:
     needs:
@@ -52,58 +45,26 @@ jobs:
       contents: write
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Download Mod
+      - name: Download Artifact
         uses: actions/download-artifact@v4
         with:
           name: ${{ github.event.repository.name }}-windows-x64-${{ github.sha }}
-          path: release/Mod/
+          path: artifact
 
-      - name: Download PDB
-        uses: actions/download-artifact@v4
-        with:
-          name: PDB
-          path: release/PDB/
-
-      - name: Download SDK artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: SDK
-          path: release/SDK/
-
-      - name: Copy additional files
+      - name: Copy Files
         run: |
-          cp LICENSE README.md release/Mod/
+          cp LICENSE README.md artifact/
 
-      - name: Archive release
+      - name: Compress Artifact
         run: |
-          cd release/Mod
           zip -r ../${{ github.event.repository.name }}-windows-x64.zip *
-          cd ..
+        working-directory: artifact
 
-      - name: Archive SDK directory
-        run: |
-          cd release/SDK
-          zip -r ../SDK.zip *
-          cd ..
-
-      - name: Calculate SHA256
-        id: calculate-sha256
-        run: |
-          echo release=$(sha256sum release/SDK.zip | awk '{print $1}') >> $GITHUB_OUTPUT
-
-      - name: Create GitHub Release
-        id: create_release
+      - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          append_body: true
-          body: |
-            | File | SHA256 |
-            | ---- | ------ |
-            | SDK.zip | ${{ steps.calculate-sha256.outputs.release }} |
           files: |
-            release/${{ github.event.repository.name }}-windows-x64.zip
-            release/PDB/${{ github.event.repository.name }}.pdb 
-            release/SDK.zip
+            ${{ github.event.repository.name }}-windows-x64.zip

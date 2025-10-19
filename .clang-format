@@ -33,7 +33,7 @@ BinPackArguments: false
 BinPackParameters: false
 BreakBeforeBraces: Custom
 BreakBeforeBinaryOperators: NonAssignment
-ColumnLimit: 120
+ColumnLimit: 115
 CommentPragmas: '^ IWYU pragma:'
 ConstructorInitializerIndentWidth: 0
 IndentWidth: 4
@@ -44,3 +44,5 @@ PointerAlignment: Left
 TabWidth: 4
 UseTab: Never
 SortIncludes: CaseSensitive
+IndentPPDirectives: AfterHash
+PPIndentWidth: 2
