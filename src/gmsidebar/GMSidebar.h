@@ -62,7 +62,7 @@ public:
                 "§gTps : §5${papi:server_tps}§g ♪     "
             }}},
             {"7", {{
-                "§3${papi:server_time,format=%D}§g号,§g时间:§3${papi:server_time}"
+                "§3${papi:server_time,format=%d}§g号,§g时间:§3${papi:server_time}"
             }}}}
         };
         // clang-format on
