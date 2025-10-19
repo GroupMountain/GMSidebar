@@ -42,4 +42,8 @@ void Entry::exportApi() {
     });
 }
 
+void Entry::removeApi() {
+    LegacyRemoteCall::removeNameSpace("GMSidebar");
+}
+
 } // namespace gmsidebar

@@ -20,6 +20,7 @@ public:
 
     void registerCmd();
     void exportApi();
+    void removeApi();
 
 private:
     ll::mod::NativeMod& mSelf;

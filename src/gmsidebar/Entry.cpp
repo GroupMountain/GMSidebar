@@ -27,6 +27,7 @@ bool Entry::enable() {
 
 bool Entry::disable() {
     GMSidebar::getInstance().disable();
+    removeApi();
     return true;
 }
 
