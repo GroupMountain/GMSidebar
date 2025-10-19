@@ -13,6 +13,34 @@
 - `/gmsidebar as <player> status` - 查看指定玩家的侧边栏状态
 - `/gmsidebar as <player> cache` - 清除指定玩家的缓存
 
+## 接口导出
+
+> 注: 命名空间皆为`GMSidebar`
+
+- `isEnable` - 侧边栏模组是否启用
+- `enable` - 启用侧边栏模组
+- `disable` - 禁用侧边栏模组
+- `loadConfig` - 加载侧边栏配置文件
+- `saveConfig` - 保存侧边栏配置文件
+- `loadConfigFromPath` - 从指定路径加载侧边栏配置文件
+  - path: string - 配置文件路径
+- `saveConfigToPath` - 保存侧边栏配置文件到指定路径
+  - path: string - 配置文件路径
+- `loadData` - 加载侧边栏数据文件
+- `saveData` - 保存侧边栏数据文件
+- `loadDataFromPath` - 从指定路径加载侧边栏数据文件
+  - path: string - 数据文件路径
+- `saveDataToPath` - 保存侧边栏数据文件到指定路径
+  - path: string - 数据文件路径
+- `isPlayerSidebarEnabled` - 指定玩家的侧边栏是否启用
+  - uuid: string - 玩家 UUID
+- `setPlayerSidebarEnabled` - 设置指定玩家的侧边栏启用状态
+  - uuid: string - 玩家 UUID
+  - enabled: boolean - 是否启用侧边栏
+- `clearPlayerCache` - 清除指定玩家的缓存
+  - uuid: string - 玩家 UUID
+- `clearAllPlayerCache` - 清除所有玩家的缓存
+
 ## 开源许可
 
 ### 源代码可用性

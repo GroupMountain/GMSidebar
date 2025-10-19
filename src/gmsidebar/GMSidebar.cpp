@@ -47,9 +47,11 @@ public:
             loadConfig(path);
             saveConfig(path);
         }
-
-        loadData();
-        saveData();
+        {
+            auto path = Entry::getInstance().getSelf().getDataDir() / u8"data.nbt";
+            loadData(path);
+            saveData(path);
+        }
 
         ll::coro::keepThis([&]() -> ll::coro::CoroTask<> {
             while (mRunning.load()) {
