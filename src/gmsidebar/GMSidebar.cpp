@@ -6,6 +6,8 @@
 #include <ll/api/Config.h>
 #include <ll/api/coro/CoroTask.h>
 #include <ll/api/coro/InterruptableSleep.h>
+#include <ll/api/event/EventBus.h>
+#include <ll/api/event/player/PlayerDisconnectEvent.h>
 #include <ll/api/service/Bedrock.h>
 #include <ll/api/thread/ServerThreadExecutor.h>
 #include <ll/api/utils/ErrorUtils.h>
@@ -29,16 +31,18 @@ public:
     };
 
 public:
-    Config                             mConfig;
-    ll::SmallDenseMap<mce::UUID, bool> mPlayerSidebarEnabled;
-    std::atomic_bool                   mRunning{true};
-    ll::coro::InterruptableSleep       mSleep;
-    ll::thread::ServerThreadExecutor   mExecutor{
+    std::string                               mObjectiveName{"GMSidebar"};
+    Config                                    mConfig;
+    ll::SmallDenseMap<mce::UUID, bool>        mPlayerSidebarEnabled;
+    std::atomic_bool                          mRunning{true};
+    ll::coro::InterruptableSleep              mSleep;
+    ll::SmallDenseMap<mce::UUID, PlayerCache> mPlayerCache;
+    ll::event::ListenerPtr                    mListener;
+    ll::thread::ServerThreadExecutor          mExecutor{
         Entry::getInstance().getSelf().getName(),
         std::chrono::milliseconds{30},
         16
     };
-    ll::SmallDenseMap<mce::UUID, PlayerCache> mPlayerCache;
 
 public:
     Impl() {
@@ -70,13 +74,20 @@ public:
             }
             co_return;
         }).launch(mExecutor);
+
+        mListener = ll::event::EventBus::getInstance().emplaceListener<ll::event::PlayerDisconnectEvent>(
+            [&](ll::event::PlayerDisconnectEvent& event) -> void {
+                mPlayerSidebarEnabled.erase(event.self().getUuid());
+            }
+        );
     }
     ~Impl() {
         mRunning.store(false);
         mSleep.interrupt();
+        ll::event::EventBus::getInstance().removeListener(mListener);
         gmlib::GMBinaryStream removeObjectiveStream;
         removeObjectiveStream.writePacketHeader(MinecraftPacketIds::RemoveObjective);
-        removeObjectiveStream.writeString("GMSidebar");
+        removeObjectiveStream.writeString(mObjectiveName);
         ll::service::getLevel()->forEachPlayer([&](Player& player) -> bool {
             if (player.isSimulated()) return mRunning.load();
             if (auto it = mPlayerSidebarEnabled.find(player.getUuid());
@@ -128,6 +139,8 @@ public:
     }
     void saveConfig(std::filesystem::path const& path) { ll::config::saveConfig(mConfig, path); }
     void loadData(std::filesystem::path const& path) {
+        auto uuids = mPlayerSidebarEnabled | std::views::filter([](auto&& pair) { return pair.second; })
+                   | std::views::keys | std::ranges::to<ll::SmallDenseSet<mce::UUID>>();
         auto& logger = Entry::getInstance().getSelf().getLogger();
         try {
             if (auto content = ll::file_utils::readFile(path, true); content) {
@@ -144,10 +157,28 @@ public:
                     logger.error("Failed to load data file");
                     nbt.error().log(logger);
                 }
+            } else {
+                mPlayerSidebarEnabled.clear();
             }
         } catch (...) {
             logger.error("Failed to load data file");
             ll::error_utils::printCurrentException(logger);
+        }
+
+        if (uuids.empty()) return;
+        if (auto level = ll::service::getLevel(); level) {
+            gmlib::GMBinaryStream removeObjectiveStream;
+            removeObjectiveStream.writePacketHeader(MinecraftPacketIds::RemoveObjective);
+            removeObjectiveStream.writeString(mObjectiveName);
+            level->forEachPlayer([&](Player& player) -> bool {
+                if (uuids.contains(player.getUuid())
+                    && (!mPlayerSidebarEnabled.contains(player.getUuid())
+                        || !mPlayerSidebarEnabled[player.getUuid()])) {
+                    removeObjectiveStream.sendTo(player);
+                    mPlayerCache.erase(player.getUuid());
+                }
+                return true;
+            });
         }
     }
     void saveData(std::filesystem::path const& path) {
@@ -241,13 +272,13 @@ public:
         if (updateContent(mConfig.title, cache.mTitle)) {
             gmlib::GMBinaryStream removeObjectiveStream;
             removeObjectiveStream.writePacketHeader(MinecraftPacketIds::RemoveObjective);
-            removeObjectiveStream.writeString("GMSidebar");
+            removeObjectiveStream.writeString(mObjectiveName);
             removeObjectiveStream.sendTo(player);
 
             gmlib::GMBinaryStream addObjectiveStream;
             addObjectiveStream.writePacketHeader(MinecraftPacketIds::SetDisplayObjective);
             addObjectiveStream.writeString("sidebar");
-            addObjectiveStream.writeString("GMSidebar");
+            addObjectiveStream.writeString(mObjectiveName);
             addObjectiveStream.writeString(cache.mTitle.second);
             addObjectiveStream.writeString("dummy");
             addObjectiveStream.writeVarInt(mConfig.sort_type);
@@ -263,7 +294,7 @@ public:
                 if (updateContent(info, it->second) || sendAll) {
                     updated.emplace_back(
                         index,
-                        ll::hash_utils::HashCombiner{}.addRange("GMSIdebar").addRange(index).hash()
+                        ll::hash_utils::HashCombiner{}.addRange(mObjectiveName).addRange(index).hash()
                     );
                 }
             }
@@ -276,7 +307,7 @@ public:
                 removeScoreStream.writeUnsignedVarInt(updated.size());
                 for (auto& index : updated) {
                     removeScoreStream.writeVarInt64(index.second);
-                    removeScoreStream.writeString("GMSidebar");
+                    removeScoreStream.writeString(mObjectiveName);
                     removeScoreStream.writeUnsignedInt(0);
                 }
                 removeScoreStream.sendTo(player);
@@ -288,7 +319,7 @@ public:
             addScoreStream.writeUnsignedVarInt(updated.size());
             for (auto& index : updated) {
                 addScoreStream.writeVarInt64(index.second);
-                addScoreStream.writeString("GMSidebar");
+                addScoreStream.writeString(mObjectiveName);
                 addScoreStream.writeUnsignedInt(std::stoi(index.first));
                 addScoreStream.writeUnsignedChar(IdentityDefinition::Type::FakePlayer);
                 addScoreStream.writeString(cache.mContent[index.first].second);
@@ -330,11 +361,11 @@ void GMSidebar::saveConfig(std::optional<std::filesystem::path> const& path) {
 }
 void GMSidebar::loadData(std::optional<std::filesystem::path> const& path) {
     if (!pImpl) throw std::runtime_error("GMSidebar is not enabled");
-    pImpl->loadData(path.value_or(Entry::getInstance().getSelf().getConfigDir() / u8"data.nbt"));
+    pImpl->loadData(path.value_or(Entry::getInstance().getSelf().getDataDir() / u8"data.nbt"));
 }
 void GMSidebar::saveData(std::optional<std::filesystem::path> const& path) {
     if (!pImpl) throw std::runtime_error("GMSidebar is not enabled");
-    pImpl->saveData(path.value_or(Entry::getInstance().getSelf().getConfigDir() / u8"data.nbt"));
+    pImpl->saveData(path.value_or(Entry::getInstance().getSelf().getDataDir() / u8"data.nbt"));
 }
 bool GMSidebar::isPlayerSidebarEnabled(mce::UUID const& uuid) {
     if (!pImpl) throw std::runtime_error("GMSidebar is not enabled");
@@ -346,15 +377,15 @@ bool GMSidebar::isPlayerSidebarEnabled(mce::UUID const& uuid) {
 void GMSidebar::setPlayerSidebarEnabled(mce::UUID const& uuid, bool enable) {
     if (!pImpl) throw std::runtime_error("GMSidebar is not enabled");
     pImpl->mPlayerSidebarEnabled[uuid] = enable;
-    if (!enable) {
-        pImpl->mPlayerCache.erase(uuid);
-        if (auto level = ll::service::getLevel(); level) {
-            if (auto* player = level->getPlayer(uuid); player) {
-                gmlib::GMBinaryStream removeObjectiveStream;
-                removeObjectiveStream.writePacketHeader(MinecraftPacketIds::RemoveObjective);
-                removeObjectiveStream.writeString("GMSidebar");
-                removeObjectiveStream.sendTo(*player);
-            }
+    saveData(std::nullopt);
+    if (enable) return;
+    pImpl->mPlayerCache.erase(uuid);
+    if (auto level = ll::service::getLevel(); level) {
+        if (auto* player = level->getPlayer(uuid); player) {
+            gmlib::GMBinaryStream removeObjectiveStream;
+            removeObjectiveStream.writePacketHeader(MinecraftPacketIds::RemoveObjective);
+            removeObjectiveStream.writeString(pImpl->mObjectiveName);
+            removeObjectiveStream.sendTo(*player);
         }
     }
     saveData(std::nullopt);
