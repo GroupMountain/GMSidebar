@@ -288,7 +288,7 @@ public:
         }
 
         // 处理内容更新
-        std::vector<std::pair<std::string,size_t>> updated;
+        std::vector<std::pair<std::string, size_t>> updated;
         for (auto& [index, info] : mConfig.objectives) {
             if (auto it = cache.mContent.find(index); it != cache.mContent.end()) {
                 if (updateContent(info, it->second) || sendAll) {

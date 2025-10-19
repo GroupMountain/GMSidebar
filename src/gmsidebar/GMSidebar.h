@@ -47,11 +47,11 @@ public:
             {"3", {{"§e#§d#§b#§g#其§e它§d信§b息§e#§d#§b#§g#"}, 0}},
             {"4", {{
                 "§g平  台: §5${papi:player_device}",
-                "§g延  迟: ${papi:dict,input=${papi:compare,operator=>,left=${papi:player_avg_ping},right=1000},true=§4,false=§2}${papi:player_avg_ping}ms",
+                "§g延  迟: ${papi:scope,input=${papi:player_avg_ping},default=§2,1000..=§4}${papi:player_avg_ping}ms",
                 "§g版  本: §6${papi:server_version}"
             }}},
             {"5", {{
-                "§g掉落物: §4${papi:dict,input=${papi:compare,operator=>,left=${papi:server_total_entities,type=minecraft:item},right=1000},true=§4,false=§2}${papi:server_total_entities,type=minecraft:item},§g生  物:§4${papi:server_total_entities}",
+                "§g掉落物: §4${papi:scope,input=${papi:server_total_entities,type=minecraft:item},default=§2,1000..=§4}${papi:server_total_entities,type=minecraft:item},§g生  物:§4${papi:server_total_entities}",
                 "§g玩  家: §5${papi:server_online}"
             }, 3000}},
             {"6", {{
@@ -63,8 +63,11 @@ public:
             }}},
             {"7", {{
                 "§3${papi:server_time,format=%d}§g号,§g时间:§3${papi:server_time}"
-            }}}}
-        };
+            }, 500}},
+            {"8", {{
+                "§g提示: ${papi:scope,input=${papi:server_time,format=%H},default=§l§8夜深了!,7..21=§3加油肝!}"
+            }, 1000 * 60}}
+        }};
         // clang-format on
     };
 
