@@ -1,7 +1,7 @@
 {
     "format_version": 2,
     "tooth": "github.com/GroupMountain/GMSidebar",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "info": {
         "name": "GMSidebar",
         "description": "High Performance Sidebar Mod",

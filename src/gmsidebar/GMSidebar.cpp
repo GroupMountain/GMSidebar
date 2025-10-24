@@ -77,7 +77,7 @@ public:
 
         mListener = ll::event::EventBus::getInstance().emplaceListener<ll::event::PlayerDisconnectEvent>(
             [&](ll::event::PlayerDisconnectEvent& event) -> void {
-                mPlayerSidebarEnabled.erase(event.self().getUuid());
+                mPlayerCache.erase(event.self().getUuid());
             }
         );
     }
