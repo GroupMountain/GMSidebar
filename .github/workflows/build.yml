@@ -26,7 +26,7 @@ jobs:
         run: xmake repo -u
 
       - name: Update Project
-        run: xmake f -a x64 -m release -p windows -v -y
+        run: xmake f -a x64 -m release -p windows -y
 
       - name: Build Project
         run: xmake -v -y

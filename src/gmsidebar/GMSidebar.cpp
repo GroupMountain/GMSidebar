@@ -211,7 +211,7 @@ public:
             if (auto interval = config.update_interval; !interval) {
                 if (cache.second.empty()) {
                     // clang-format off
-                    cache.second = std::move(gmlib::PlaceholderAPI::translate(
+                    cache.second = std::move(gmlib::PlaceholderAPI::getInstance().translate(
                         std::string{config.content[0]},
                         player,
                         {},
@@ -226,30 +226,17 @@ public:
                     return true;
                 }
             } else {
-                auto length   = config.content.size();
-                auto newIndex = length > 1 ? (now / interval) % length : 0;
-                ll::DenseMap<
-                    std::string,
-                    std::variant<
-                        std::string,
-                        std::function<std::optional<std::string>(
-                            optional_ref<Actor>               actor,
-                            ll::StringMap<std::string> const& params,
-                            std::string const&                language
-                        )>>>
-                    params = {
-                        {"currentIndex",   std::to_string(newIndex)             },
-                        {"rawContent",     config.content[newIndex]             },
-                        {"updateInterval", std::to_string(interval)             },
-                        {"contentSize",    std::to_string(config.content.size())}
+                auto                                      length   = config.content.size();
+                auto                                      newIndex = length > 1 ? (now / interval) % length : 0;
+                gmlib::PlaceholderAPI::TranslateVariables params   = {
+                    {"currentIndex",   std::to_string(newIndex)             },
+                    {"rawContent",     config.content[newIndex]             },
+                    {"updateInterval", std::to_string(interval)             },
+                    {"contentSize",    std::to_string(config.content.size())}
                 };
                 if (newIndex != cache.first) {
-                    if (auto newValue = gmlib::PlaceholderAPI::translate(
-                            std::string{config.content[newIndex]},
-                            player,
-                            {},
-                            params
-                        );
+                    if (auto newValue = gmlib::PlaceholderAPI::getInstance()
+                                            .translate(std::string{config.content[newIndex]}, player, {}, params);
                         newValue != cache.second) {
                         cache.second = std::move(newValue);
                         cache.first  = newIndex;
@@ -257,8 +244,8 @@ public:
                     }
                     cache.first = newIndex;
                 } else if (length == 1) {
-                    if (auto newValue =
-                            gmlib::PlaceholderAPI::translate(std::string{config.content[0]}, player, {}, params);
+                    if (auto newValue = gmlib::PlaceholderAPI::getInstance()
+                                            .translate(std::string{config.content[0]}, player, {}, params);
                         newValue != cache.second) {
                         cache.second = std::move(newValue);
                         return true;
