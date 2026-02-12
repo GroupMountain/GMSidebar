@@ -3,9 +3,9 @@ add_rules("mode.debug", "mode.release")
 add_repositories("liteldev-repo https://github.com/LiteLDev/xmake-repo.git")
 add_repositories("groupmountain-repo https://github.com/GroupMountain/xmake-repo.git")
 
-add_requires("levilamina 1.7.1", {configs = {target_type = "server"}})
-add_requires("levibuildscript 0.5.2")
-add_requires("gmlib 1.7.0")
+add_requires("levilamina 1.9.5", {configs = {target_type = "server"}})
+add_requires("levibuildscript 0.6.0")
+add_requires("gmlib 1.9.0")
 
 if not has_config("vs_runtime") then
     set_runtimes("MD")
@@ -31,6 +31,7 @@ target("GMSidebar")
         "_HAS_CXX23=1",
         "GMSidebar_EXPORTS"
     )
+    add_defines("LL_PLAT_S")  --TODO: check client compatibility
     add_packages(
         "levilamina",
         "gmlib"

@@ -13,7 +13,7 @@ namespace gmsidebar {
 
 void Entry::registerCmd() {
     using namespace ll::i18n_literals;
-    auto& cmd = ll::command::CommandRegistrar::getInstance().getOrCreateCommand(
+    auto& cmd = ll::command::CommandRegistrar::getInstance(false).getOrCreateCommand(
         "gmsidebar",
         "Turn on or off the sidebar"_tr()
     );
