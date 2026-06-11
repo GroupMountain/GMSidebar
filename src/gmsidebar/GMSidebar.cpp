@@ -14,7 +14,7 @@
 #include <ll/api/utils/HashUtils.h>
 #include <mc/deps/ecs/gamerefs_entity/GameRefsEntity.h>
 #include <mc/entity/components/ActorOwnerComponent.h>
-#include <mc/nbt/CompoundTagVariant.h>
+#include <mc/deps/nbt/CompoundTagVariant.h>
 #include <mc/network/packet/ScorePacketType.h>
 #include <mc/server/ServerPlayer.h>
 #include <mc/world/level/Level.h>
