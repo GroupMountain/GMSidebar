@@ -3,9 +3,9 @@ add_rules("mode.debug", "mode.release")
 add_repositories("levimc-repo https://github.com/LiteLDev/xmake-repo.git")
 add_repositories("groupmountain-repo https://github.com/GroupMountain/xmake-repo.git")
 
-add_requires("levilamina 26.10.4", {configs = {target_type = get_config("target_type")}})
+add_requires("levilamina 26.20.0", {configs = {target_type = get_config("target_type")}})
 add_requires("levibuildscript")
-add_requires("gmlib 26.10.0")
+add_requires("gmlib 26.20.0")
 add_requires("cpp-httplib 0.15.3", {configs = {ssl = true, zlib = true}})
 
 if not has_config("vs_runtime") then
@@ -26,6 +26,21 @@ target("GMSidebar")
         "/w44738",
         "/w45204"
     )
+    add_cxflags(
+        "/EHs",--it will crash if it is not here
+        "-Wno-microsoft-cast",
+        "-Wno-invalid-offsetof",
+        "-Wno-c++2b-extensions",
+        "-Wno-microsoft-include",
+        "-Wno-overloaded-virtual",
+        "-Wno-ignored-qualifiers",
+        "-Wno-missing-field-initializers",
+        "-Wno-potentially-evaluated-expression",
+        "-Wno-pragma-system-header-outside-header",
+        {tools = {"clang_cl"}}
+    )
+    set_toolchains("clang-cl")
+
     add_defines(
         "GMSidebar_EXPORTS",
         "NOMINMAX",
