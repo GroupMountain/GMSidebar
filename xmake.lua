@@ -3,7 +3,7 @@ add_rules("mode.debug", "mode.release")
 add_repositories("levimc-repo https://github.com/LiteLDev/xmake-repo.git")
 add_repositories("groupmountain-repo https://github.com/GroupMountain/xmake-repo.git")
 
-add_requires("levilamina 26.20.0", {configs = {target_type = get_config("target_type")}})
+add_requires("levilamina 26.20.7", {configs = {target_type = get_config("target_type")}})
 add_requires("levibuildscript")
 add_requires("gmlib 26.20.0")
 add_requires("cpp-httplib 0.15.3", {configs = {ssl = true, zlib = true}})
