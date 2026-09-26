@@ -15,12 +15,12 @@
 #include <mc/deps/ecs/gamerefs_entity/GameRefsEntity.h>
 #include <mc/entity/components/ActorOwnerComponent.h>
 #include <mc/deps/nbt/CompoundTagVariant.h>
-#include <mc/network/packet/ScorePacketType.h>
+#include <mc/network/packet/SetScorePacket.h>
 #include <mc/server/ServerPlayer.h>
 #include <mc/world/level/Level.h>
 #include <mc/world/scores/IdentityDefinition.h>
 #include <ranges>
-
+#include "mc/network/packet/ScorePacketEntryAction.h"
 namespace gmsidebar {
 
 struct GMSidebar::Impl {
@@ -64,10 +64,11 @@ public:
 
                 ll::service::getLevel()->forEachPlayer([&](Player& player) -> bool {
                     if (player.isSimulated()) return mRunning.load();
-                    if (auto it = mPlayerSidebarEnabled.find(player.getUuid());
-                        (it != mPlayerSidebarEnabled.end() && !it->second) || !mConfig.default_enabled) {
-                        return mRunning.load();
+                    auto it = mPlayerSidebarEnabled.find(player.getUuid());
+                    if (it != mPlayerSidebarEnabled.end()) {
+                        if (!it->second) return mRunning.load();
                     }
+                    else if (!mConfig.default_enabled) return mRunning.load();
                     updatePlayerSidebar(player);
                     return mRunning.load();
                 });
@@ -288,30 +289,32 @@ public:
         }
         if (!updated.empty()) {
             if (!sendAll) {
+                for (auto& index : updated) {
+
                 gmlib::GMBinaryStream removeScoreStream;
                 removeScoreStream.writePacketHeader(MinecraftPacketIds::SetScore);
-                removeScoreStream.writeUnsignedChar(ScorePacketType::Remove);
-                removeScoreStream.writeUnsignedVarInt(updated.size());
-                for (auto& index : updated) {
-                    removeScoreStream.writeVarInt64(index.second);
-                    removeScoreStream.writeString(mObjectiveName);
-                    removeScoreStream.writeUnsignedInt(0);
-                }
-                removeScoreStream.sendTo(player);
+                removeScoreStream.writeUnsignedVarInt(0);
+                removeScoreStream.writeUnsignedChar(ScorePacketEntryAction::Remove);
+                removeScoreStream.writeVarInt64(index.second);
+                removeScoreStream.writeString(mObjectiveName);
+
+
+                removeScoreStream.sendTo(player);}
             }
+            for (auto& index : updated) {
 
             gmlib::GMBinaryStream addScoreStream;
             addScoreStream.writePacketHeader(MinecraftPacketIds::SetScore);
-            addScoreStream.writeUnsignedChar(ScorePacketType::Change);
-            addScoreStream.writeUnsignedVarInt(updated.size());
-            for (auto& index : updated) {
+            addScoreStream.writeUnsignedVarInt(1);
+            addScoreStream.writeUnsignedChar(ScorePacketEntryAction::ChangePlayer);
+
                 addScoreStream.writeVarInt64(index.second);
                 addScoreStream.writeString(mObjectiveName);
-                addScoreStream.writeUnsignedInt(std::stoi(index.first));
-                addScoreStream.writeUnsignedChar(IdentityDefinition::Type::FakePlayer);
-                addScoreStream.writeString(cache.mContent[index.first].second);
-            }
+                addScoreStream.writeSignedInt(std::stoi(index.first));
+                addScoreStream.writeVarInt64(player.getOrCreateUniqueID().rawID);
+
             addScoreStream.sendTo(player);
+            }
         }
     }
 };
