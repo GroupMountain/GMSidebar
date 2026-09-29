@@ -3,10 +3,10 @@ add_rules("mode.debug", "mode.release")
 add_repositories("levimc-repo https://github.com/LiteLDev/xmake-repo.git")
 add_repositories("groupmountain-repo https://github.com/GroupMountain/xmake-repo.git")
 
-add_requires("levilamina 26.51.5", {configs = {target_type = get_config("target_type")}})
+add_requires("levilamina 26.51.6", {configs = {target_type = get_config("target_type")}})
 add_requires("levibuildscript")
 add_requires("gmlib 26.51.0")
-add_requires("cpp-httplib 0.15.3", {configs = {ssl = true, zlib = true}})
+add_requires("cpp-httplib 0.53.1", {configs = {ssl = true, zlib = true}})
 
 if not has_config("vs_runtime") then
     set_runtimes("MD")
