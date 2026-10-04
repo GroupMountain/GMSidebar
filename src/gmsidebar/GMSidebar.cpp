@@ -287,33 +287,32 @@ public:
                 }
             }
         }
+        // 给每个更新的内容发送一个remove和一个changefakeplayer包,如果sendAll为true则不发送remove包
         if (!updated.empty()) {
             if (!sendAll) {
                 for (auto& index : updated) {
-
-                gmlib::GMBinaryStream removeScoreStream;
-                removeScoreStream.writePacketHeader(MinecraftPacketIds::SetScore);
-                removeScoreStream.writeUnsignedVarInt(0);
-                removeScoreStream.writeUnsignedChar(ScorePacketEntryAction::Remove);
-                removeScoreStream.writeVarInt64(index.second);
-                removeScoreStream.writeString(mObjectiveName);
-
-
-                removeScoreStream.sendTo(player);}
+                    gmlib::GMBinaryStream removeScoreStream;
+                    removeScoreStream.writePacketHeader(MinecraftPacketIds::SetScore);
+                    removeScoreStream.writeUnsignedVarInt(1);
+                    removeScoreStream.writeUnsignedVarInt(ScorePacketEntryAction::Remove);
+                    removeScoreStream.writeString("remove");
+                    removeScoreStream.writeVarInt64(index.second);
+                    removeScoreStream.writeBool(true);
+                    removeScoreStream.writeString(mObjectiveName);
+                    removeScoreStream.sendTo(player);
+                }
             }
             for (auto& index : updated) {
-
-            gmlib::GMBinaryStream addScoreStream;
-            addScoreStream.writePacketHeader(MinecraftPacketIds::SetScore);
-            addScoreStream.writeUnsignedVarInt(1);
-            addScoreStream.writeUnsignedChar(ScorePacketEntryAction::ChangePlayer);
-
+                gmlib::GMBinaryStream addScoreStream;
+                addScoreStream.writePacketHeader(MinecraftPacketIds::SetScore);
+                addScoreStream.writeUnsignedVarInt(1);
+                addScoreStream.writeUnsignedVarInt(ScorePacketEntryAction::ChangeFakePlayer);
+                addScoreStream.writeString("changefakeplayer");
                 addScoreStream.writeVarInt64(index.second);
                 addScoreStream.writeString(mObjectiveName);
                 addScoreStream.writeSignedInt(std::stoi(index.first));
-                addScoreStream.writeVarInt64(player.getOrCreateUniqueID().rawID);
-
-            addScoreStream.sendTo(player);
+                addScoreStream.writeString(cache.mContent[index.first].second);
+                addScoreStream.sendTo(player);
             }
         }
     }
