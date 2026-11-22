@@ -3,9 +3,9 @@ add_rules("mode.debug", "mode.release")
 add_repositories("levimc-repo https://github.com/LiteLDev/xmake-repo.git")
 add_repositories("groupmountain-repo https://github.com/GroupMountain/xmake-repo.git")
 
-add_requires("levilamina 26.51.6", {configs = {target_type = get_config("target_type")}})
+add_requires("levilamina 26.60.5", {configs = {target_type = get_config("target_type")}})
 add_requires("levibuildscript")
-add_requires("gmlib 26.51.0")
+add_requires("gmlib 26.60.0")
 add_requires("cpp-httplib 0.53.1", {configs = {ssl = true, zlib = true}})
 
 if not has_config("vs_runtime") then
@@ -14,7 +14,11 @@ end
 
 target("GMSidebar")
     add_rules("@levibuildscript/linkrule")
-    add_rules("@levibuildscript/modpacker")
+    if os.isfile(path.join(os.projectdir(), ".git", "HEAD")) then
+        add_rules("@levibuildscript/modpacker")
+    else
+        add_rules("@levibuildscript/modpacker", {modVersion = "26.60.0"})
+    end
     add_cxflags(
         "/EHa",
         "/utf-8",
@@ -59,3 +63,14 @@ target("GMSidebar")
     add_headerfiles("src/**.h")
     add_files("src/**.cpp")
     add_includedirs("src")
+
+    after_build(function (target)
+        local bindir  = path.join(os.projectdir(), "bin")
+        local moddir  = path.join(bindir, "GMSidebar")
+        local langdir = path.join(moddir, "lang")
+        os.mkdir(moddir)
+        if os.exists(langdir) then os.rm(langdir) end
+        os.cp(path.join(os.projectdir(), "lang"), langdir)
+        os.cp(path.join(os.projectdir(), "LICENSE"), bindir)
+        os.cp(path.join(os.projectdir(), "README.md"), bindir)
+    end)

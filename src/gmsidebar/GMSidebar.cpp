@@ -4,8 +4,8 @@
 #include <gmlib/gm/utils/StringUtils.h>
 #include <gmlib/mc/network/BinaryStream.h>
 #include <ll/api/Config.h>
+#include <ll/api/coro/ConditionVariable.h>
 #include <ll/api/coro/CoroTask.h>
-#include <ll/api/coro/InterruptableSleep.h>
 #include <ll/api/event/EventBus.h>
 #include <ll/api/event/player/PlayerDisconnectEvent.h>
 #include <ll/api/service/Bedrock.h>
@@ -30,12 +30,23 @@ public:
         ll::SmallDenseMap<std::string, std::pair<size_t, std::string>> mContent;
     };
 
+    // 协程与对象共享的存活状态。
+    // 26.60 起 ll::coro::InterruptableSleep 挪到 ll::thread 且不再是 awaiter，协程里的
+    // "可被打断的等待"改用 ll::coro::ConditionVariable（带谓词，关停时 notifyAll 立刻返回）。
+    // disable() 会直接析构 Impl，而挂起的协程随后仍会被唤醒一次：它只读这份 shared 状态，
+    // 一旦 running/hostAlive 为 false 就直接结束，不再碰 this（协程体与析构都在主线程，不会交错）。
+    struct LoopState {
+        std::atomic_bool            running{true};
+        std::atomic_bool            hostAlive{true};
+        ll::coro::ConditionVariable wake;
+    };
+
 public:
     std::string                               mObjectiveName{"GMSidebar"};
     Config                                    mConfig;
     ll::SmallDenseMap<mce::UUID, bool>        mPlayerSidebarEnabled;
     std::atomic_bool                          mRunning{true};
-    ll::coro::InterruptableSleep              mSleep;
+    std::shared_ptr<LoopState>                mLoop{std::make_shared<LoopState>()};
     ll::SmallDenseMap<mce::UUID, PlayerCache> mPlayerCache;
     ll::event::ListenerPtr                    mListener;
     ll::thread::ServerThreadExecutor          mExecutor{
@@ -57,10 +68,14 @@ public:
             saveData(path);
         }
 
-        ll::coro::keepThis([&]() -> ll::coro::CoroTask<> {
-            while (mRunning.load()) {
-                co_await mSleep.sleepFor(std::chrono::milliseconds{mConfig.refresh_interval});
-                if (!mRunning.load()) break;
+        ll::coro::keepThis([this, loop = mLoop]() -> ll::coro::CoroTask<> {
+            while (loop->running.load()) {
+                co_await loop->wake.waitFor(
+                    std::chrono::milliseconds{mConfig.refresh_interval},
+                    [&loop] { return !loop->running.load(); }
+                );
+                if (!loop->running.load()) break;
+                if (!loop->hostAlive.load()) break; // Impl 已析构：立刻结束，绝不访问 this
 
                 ll::service::getLevel()->forEachPlayer([&](Player& player) -> bool {
                     if (player.isSimulated()) return mRunning.load();
@@ -84,7 +99,9 @@ public:
     }
     ~Impl() {
         mRunning.store(false);
-        mSleep.interrupt();
+        mLoop->running.store(false);
+        mLoop->hostAlive.store(false);
+        mLoop->wake.notifyAll();
         ll::event::EventBus::getInstance().removeListener(mListener);
         gmlib::GMBinaryStream removeObjectiveStream;
         removeObjectiveStream.writePacketHeader(MinecraftPacketIds::RemoveObjective);
